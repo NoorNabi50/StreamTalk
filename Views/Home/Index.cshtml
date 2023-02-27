@@ -1,0 +1,51 @@
+﻿@model List<string>
+@{
+    ViewData["Title"] = "Home Page";
+
+    List<String> rooms = Model;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <a href="#">Persist Communicator using SignalR/GOOD BYE TCP/IP </a>.
+</div>
+
+
+<br />
+<div class="row">
+    <div class="col-sm-5">
+        <input type="text" readonly class="form-control" style="font-weight: bold;"  id="userName" />
+    </div>
+    <div class="col-sm-5">
+        <input type="text" class="form-control" id="roomName" placeholder="Enter Room Name" />
+    </div>
+
+    <div class="col-sm-2">
+        <button type="button" onclick="createRoom()" class="btn btn-primary">Create Room</button>
+    </div>
+</div>
+<br />
+<center>
+    <span>Rooms</span>
+</center>
+<table class="table table-bordered">
+    <thead class="bg-primary">
+        <tr>
+            <th>Room Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody id="tableBody">
+
+            @foreach (string room in rooms)
+            {
+                <tr>
+                    <td>@room</td>
+                    <td><button id="joinBtn" onclick="JoinRoom(this)" data-room="@room" class="btn btn-info">Join</button></td>
+                </tr>
+
+            }
+
+    </tbody>
+</table>
