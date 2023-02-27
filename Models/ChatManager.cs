@@ -21,20 +21,25 @@ namespace PersistCommunicator.Models
         {
             return rooms.Count > 0 ? rooms.Keys.ToList().ConvertAll(x => x.Split('_')[0].ToString()) : new List<string>();
         }
-        public Tuple<string?, string> DisconnectUser(string connectionId)
+        public (string?, string?) DisconnectUser(string connectionId)
         {
-           var userConnection =  rooms.Where(w => w.Value.Item1.Any(x => x.CommunicatorConnectionId == connectionId))
-                 .Select(y => new
-                  { key = y.Key,
-                     communicator = y.Value.Item1.First(z=> z.CommunicatorConnectionId.Equals(connectionId)),
-                 }).FirstOrDefault();
+           var userConnections = rooms.Where(w => w.Value.Item1
+                                .Any(x => x.CommunicatorConnectionId == connectionId))
+                               .Select(y => new    { key = y.Key, communicator = y.Value.Item1
+                               .First(z=> z.CommunicatorConnectionId.Equals(connectionId)),
+                 }).ToList().AsReadOnly();
 
-            if(userConnection != null)
+            if (userConnections is null)
             {
-                return Tuple.Create(userConnection.key, userConnection.communicator.CommunicatorName);   
+                return ("", "");
             }
 
-            return null;
+            var userConnection = userConnections[0];
+            foreach (var connection in userConnections)
+            {
+                rooms[connection.key].Item1.Remove(connection.communicator);
+            }
+            return (userConnection.key,userConnection.communicator.CommunicatorName);
         }
 
     }
