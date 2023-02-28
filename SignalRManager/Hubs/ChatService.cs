@@ -39,8 +39,7 @@ namespace PersistCommunicator.SignalRManager.Hubs
         }
         private async Task<string> createOrJoinRoom(string roomName,string userName)
         {
-            string guidId = Guid.NewGuid().ToString();
-            string room = roomName + "_" + guidId;
+            string room = roomName + "_" + Guid.NewGuid().ToString();
             await Groups.AddToGroupAsync(Context.ConnectionId, room);
             chatManager.AddGroup(room, userName, Context.ConnectionId);
             return room;
