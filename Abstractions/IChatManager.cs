@@ -1,12 +1,16 @@
-﻿namespace PersistCommunicator.Abstractions
+﻿using System.Collections;
+
+namespace PersistCommunicator.Abstractions
 {
     public interface IChatManager
     {
-        void AddGroup(string roomName, string userName, string connectionId);
-        Tuple<string?, string> DisconnectUser(string connectionId);
+        string AddOrUpdateRoom(string roomName, string userName, string connectionId);
+        (string?, string) DisconnectUser(string connectionId);
         List<string> GetRooms();
         void RemoveGroup(string roomName);
-        string roomCreatedMessage(string UserName, string roomName);
+        ArrayList roomCreatedResponseToOthers(string UserName, string roomName,string createdRoomKey);
+        ArrayList roomCreatedResponseToOwner(string UserName, string roomName,string createdRoomKey);
+
         string roomJoinedMessage(string UserName);
         string userLeftMessage(string UserName);
     }

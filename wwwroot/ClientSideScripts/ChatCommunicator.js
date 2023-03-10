@@ -1,27 +1,35 @@
 ﻿const connection = new signalR.HubConnectionBuilder().withUrl("/chatService").build();
-
 console.log(connection)
 
-$(document).ready(function () {
-  
-        let userName = prompt('Enter Your Name');
-        $('#userName').val(userName);
-
-})
-
-
 connection.start().then(function () {
-        console.log("Connection started");
-    }).catch(function (err) {
-        return console.error(err.toString());
+    console.log("Connection started");
+}).catch(function (err) {
+    return console.error(err.toString());
 });
+
+$(document).ready(function () {
+    var userName = localStorage.getItem("userName");
+    if (!userName) {
+        userName = prompt('Enter Your Name');
+        localStorage.setItem("userName", userName);
+    }
+     $('#userName').val(userName);
+})
 
 connection.on("joinedRoom", function (message) {
     alert(message);
 });
 
-connection.on("roomCreated", function (message, roomName) {
-    createRoomMarkup(roomName);
+connection.on("roomCreated", function (response) {
+    createRoomMarkup(response[1]);
+    $.jGrowl(response[0], {
+        header: 'Notification',
+        theme: 'bg-success'
+    });
+});
+
+connection.on("newRoomCreated", function (response) {
+    createRoomMarkup(response[1]);
 });
 
 connection.on("receiveMessage", function (message) {
@@ -32,37 +40,34 @@ connection.on("notifyUsers", function (message) {
     alert(message);
 });
 
-
-
-function createRoomMarkup(roomName) {
-    $('#tableBody').append(`<tr><td>${roomName}</td><td><button id="joinBtn" data-attr="${roomName}" class="btn btn-info">Join</button></td></tr>`)
+function createRoomMarkup(markUp) {
+    $('#tableBody').append(markUp)
 }
 
 function createRoom() {
     var result = validateAndGetInfo();
     if (result) {
-        connection.invoke("createRoom", result.userName.val(), result.roomName.val()).catch(function (err) {
+        connection.invoke("CreateRoom", result.userName.val(), result.roomName.val()).catch(function (err) {
             return console.error(err.toString());
         });
         result.roomName.val('');
-        result.userName.val('');
+        result.userName.prop('readonly', 'true');
     }
 }
 
-function JoinRoom(arg) {
+function JoinRoom(room) {
     let userName = $('#userName').val();
-    let roomName = $(arg).data('room');
-    connection.invoke('joinRoom', userName, roomName).catch((err) => {
+    connection.invoke('joinRoom', userName, room).catch((err) => {
         return console.error(err.toString());
     });
 }
-
 
 function validateAndGetInfo() {
     const roomName = $('#roomName');
     const userName = $('#userName');
     if (roomName.val() == '' || userName.val() == '') {
         alert('Fill All Fields');
+        userName.removeAttr('readonly').focus();
         return null;
     }
     return { roomName, userName }

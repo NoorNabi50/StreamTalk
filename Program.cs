@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-builder.Services.AddScoped<IChatManager, ChatManager>();
+builder.Services.AddSingleton<IChatManager, ChatManager>();
 builder.Services.AddSignalR();
 var app = builder.Build();
 
@@ -27,7 +27,7 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
+        pattern: "{controller=Chat}/{action=Index}/{id?}");
 
 app.MapHub<ChatHub>("/chatService");
 app.Run();
