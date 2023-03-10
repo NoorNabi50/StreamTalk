@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-builder.Services.AddScoped<IChatManager, ChatManager>();
+builder.Services.AddSingleton<IChatManager, ChatManager>();
 builder.Services.AddSignalR();
 var app = builder.Build();
 

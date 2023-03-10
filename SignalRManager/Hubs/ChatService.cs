@@ -30,11 +30,8 @@ namespace PersistCommunicator.SignalRManager.Hubs
         public override async Task OnDisconnectedAsync(Exception? e)
         {
            var disconnetedUserInfo =  chatManager.DisconnectUser(Context.ConnectionId);
-            if (disconnetedUserInfo != null)
-            {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, disconnetedUserInfo.Item1);
-                await Clients.OthersInGroup(disconnetedUserInfo.Item1).SendAsync("notifyUsers", chatManager.userLeftMessage(disconnetedUserInfo.Item2));
-            }
+           await Groups.RemoveFromGroupAsync(Context.ConnectionId, disconnetedUserInfo.Item1);
+           await Clients.OthersInGroup(disconnetedUserInfo.Item1).SendAsync("notifyUsers", chatManager.userLeftMessage(disconnetedUserInfo.Item2));
            await base.OnDisconnectedAsync(e);
         }
         private async Task<string> createOrJoinRoom(string roomName,string userName)
